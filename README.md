@@ -1,16 +1,11 @@
-# Kohya Train model
+# Kohya Train model SDXL
 
-## Use on Replicate
+## Use it on Replicate
 
-Easy-to-use model with all the parameters:
-
-[![Replicate](https://replicate.com/alexgenovese/kohya-train/badge)](https://replicate.com/alexgenovese/kohya-train)
+[![Replicate](https://replicate.com/alexgenovese/train-sdxl-kohya/badge)](https://replicate.com/alexgenovese/train-sdxl-kohya)
 
 ## Thanks
 
-[https://github.com/kohya-ss/sd-scripts]()
+[https://github.com/bmaltais/kohya_ss.git](Bmaltais/kohya_ss.git)
 
-[https://github.com/Akegarasu/lora-scripts]()
-
-[https://github.com/sdbds/lora-scripts]()
-
+[https://github.com/findix/replicate-sd-scripts] (findix/replicate-sd-scripts)
