@@ -30,13 +30,10 @@ class Predictor(BasePredictor):
         # Train data path 
         pretrained_model_name_or_path: str = Input(
             description="base model name or path",
-            default="stabilityai/stable-diffusion-xl-base-1.0",
-            choices=[
-                "stabilityai/stable-diffusion-xl-base-1.0",
-            ],
+            default="stabilityai/stable-diffusion-xl-base-1."
         ),
         train_data_zip: Path = Input(
-            description="Upload image dataset in zip format"),
+            description="Upload image dataset in zip format using this naming convention: XX_token className.zip"),
         network_weights: Path = Input(
             description=
             "Pretrained LoRA weights",
@@ -93,10 +90,10 @@ class Predictor(BasePredictor):
         # Learning rate
         learning_rate: float = Input(description="Learning rate",
                                      default=6e-5,
-                                     ge=0),
+                                     ge=0e-4),
         unet_lr: float = Input(description="UNet learning rate",
                                default=6e-5,
-                               ge=0),
+                               ge=0e-4),
         text_encoder_lr: float = Input(
             description="Text Encoder learning rate",
             default=7e-6,
