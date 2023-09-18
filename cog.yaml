@@ -31,4 +31,4 @@ build:
 
 # predict.py defines how predictions are run on your model
 predict: "predict.py:Predictor"
-image: "r8.im/alexgenovese/train-kohya"
+image: "r8.im/alexgenovese/train-sdxl-kohya"
