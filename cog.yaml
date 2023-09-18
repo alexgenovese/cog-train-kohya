@@ -25,9 +25,8 @@ build:
 
   # commands run after the environment is setup
   run:
-    # - "echo env is ready!"
-    # - "echo another command if needed"
     - pip install xformers==0.0.16
+    - curl -o /usr/local/bin/pget -L "https://github.com/replicate/pget/releases/download/v0.0.3/pget" && chmod +x /usr/local/bin/pget
 
 # predict.py defines how predictions are run on your model
 predict: "predict.py:Predictor"
