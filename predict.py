@@ -1,15 +1,29 @@
 import re
 import tempfile
 import zipfile
+import os
+import time
+import subprocess
 from cog import BasePredictor, Input, Path
 from sd_scripts.train_network import setup_parser, train
 
+BASE_MODEL_CACHE = "./base-model-cache"
+BASE_MODEL_ID = "stabilityai/stable-diffusion-xl-base-1.0"
 
 class Predictor(BasePredictor):
 
     def setup(self):
-        pass
+        if not os.path.exists(BASE_MODEL_CACHE):
+            self.download_weights(BASE_MODEL_ID, BASE_MODEL_CACHE)
 
+    def download_weights(url, dest):
+        start = time.time()
+        print("downloading url: ", url)
+        print("downloading to: ", dest)
+        subprocess.check_call(["pget", "-x", url, dest])
+        print("downloading took: ", time.time() - start)
+
+    
     def predict(
         self,
 
@@ -143,7 +157,7 @@ class Predictor(BasePredictor):
         parser = setup_parser()
         args = parser.parse_args()
         args.enable_bucket = True
-        args.pretrained_model_name_or_path = pretrained_model_name_or_path
+        args.pretrained_model_name_or_path = BASE_MODEL_CACHE
         args.train_data_dir = train_data_dir
         args.output_dir = output_dir
         args.output_name = output_name
