@@ -1,4 +1,7 @@
+example-dataset
+base-model-cache
 .vscode
+.cog
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
