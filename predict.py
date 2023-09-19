@@ -30,7 +30,7 @@ class Predictor(BasePredictor):
         # Train data path 
         pretrained_model_name_or_path: str = Input(
             description="base model name or path",
-            default="stabilityai/stable-diffusion-xl-base-1."
+            default="stabilityai/stable-diffusion-xl-base-1.0"
         ),
         train_data_zip: Path = Input(
             description="Upload image dataset in zip format using this naming convention: XX_token className.zip"),
@@ -51,10 +51,10 @@ class Predictor(BasePredictor):
         batch_size: int = Input(
             description="batch size", default=1, ge=1),
         max_train_epoches: int = Input(
-            description="max train epoches", default=10, ge=1),
+            description="max train epoches", default=20, ge=1),
         save_every_n_epochs: int = Input(
             description="save every n epochs",
-            default=2,
+            default=5,
             ge=1),
         network_dim: int = Input(description="network dimension",
                                  default=32,
@@ -62,7 +62,7 @@ class Predictor(BasePredictor):
         network_alpha: int = Input(
             description=
             "network alpha",
-            default=32,
+            default=16,
             ge=1),
         train_unet_only: bool = Input(
             description=
@@ -89,15 +89,18 @@ class Predictor(BasePredictor):
 
         # Learning rate
         learning_rate: float = Input(description="Learning rate",
-                                     default=6e-5,
-                                     ge=0e-4),
+                                default=0.0004,
+                                ge=0.0001,
+                                le=0.0009),
         unet_lr: float = Input(description="UNet learning rate",
-                               default=6e-5,
-                               ge=0e-4),
+                                default=0.0001,
+                                ge=0.0001,
+                                le=0.0009),
         text_encoder_lr: float = Input(
             description="Text Encoder learning rate",
-            default=7e-6,
-            ge=0),
+            default=0.0001,
+            ge=0.0001,
+            le=0.0009),
         lr_scheduler: str = Input(
             description=
             """"linear", "cosine", "cosine_with_restarts", "polynomial", "constant", "constant_with_warmup""",
@@ -132,9 +135,9 @@ class Predictor(BasePredictor):
         # Optimizer
         optimizer_type: str = Input(
             description=
-            """adaFactor","AdamW","AdamW8bit","Lion","SGDNesterov","SGDNesterov8bit","DAdaptation", Lion""",
+            """adaFactor","AdamW","AdamW8bit","Lion","SGDNesterov","SGDNesterov8bit","DAdaptation", "Lion", "Prodigy""",
             default="Lion",
-            choices=["adaFactor", "AdamW", "AdamW8bit", "Lion", "SGDNesterov", "SGDNesterov8bit", "DAdaptation"]),
+            choices=["adaFactor", "AdamW", "AdamW8bit", "Lion", "SGDNesterov", "SGDNesterov8bit", "DAdaptation", "Prodigy"]),
         network_module: str = Input(description="Network module",
                                     default="networks.lora",
                                     choices=["networks.lora"])
@@ -214,6 +217,9 @@ class Predictor(BasePredictor):
             args.use_lion_optimizer = True
         elif optimizer_type == "AdamW8bit":
             args.AdamW8bit = True
+        elif optimizer_type == "Prodigy":
+            args.optimizer_type = "Prodigy"
+            args.optimizer_args = ["weight_decay=0.01", "decouple=True", "use_bias_correction=True"] # TO TEST from: https://civitai.com/articles/1022/update-sdxl-scriptbdsqlsz-lora-training-advanced-tutorial2prodigy-is-all-you-need
 
         if network_weights:
             args.network_weights = network_weights
