@@ -1,5 +1,0 @@
-./example-dataset/arque-1024.zip
-./base-model-cache/text_encoder_2/model.safetensors
-./base-model-cache/text_encoder/model.safetensors
-./base-model-cache/unet/diffusion_pytorch_model.safetensors
-./base-model-cache/vae/diffusion_pytorch_model.safetensors

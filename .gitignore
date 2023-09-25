@@ -1,3 +1,4 @@
+.dockerignore
 STATUS.md
 example-dataset
 base-model-cache
