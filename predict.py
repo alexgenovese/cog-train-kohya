@@ -56,14 +56,6 @@ class Predictor(BasePredictor):
             description="save every n epochs",
             default=5,
             ge=1),
-        network_dim: int = Input(description="network dimension",
-                                 default=32,
-                                 ge=1),
-        network_alpha: int = Input(
-            description=
-            "network alpha",
-            default=16,
-            ge=1),
         train_unet_only: bool = Input(
             description=
             "train U-Net only",
@@ -130,7 +122,7 @@ class Predictor(BasePredictor):
             "makes workers persistent, further reduces/eliminates the lag in between epochs. however it may increase memory usage",
             default=True),
         clip_skip: int = Input(description="clip skip",
-                               default=2,
+                               default=1,
                                ge=0),
         # Optimizer
         optimizer_type: str = Input(
@@ -140,9 +132,16 @@ class Predictor(BasePredictor):
             choices=["adaFactor", "AdamW", "AdamW8bit", "Lion", "SGDNesterov", "SGDNesterov8bit", "DAdaptation", "Prodigy"]),
         network_module: str = Input(description="Network module",
                                     default="networks.lora",
-                                    choices=["networks.lora"])
+                                    choices=["networks.lora", "networks.dylora", "lycoris.kohya"]),
+        network_dim: int = Input(description="network dimension",
+                                 default=32,
+                                 ge=1),
+        network_alpha: int = Input(
+            description=
+            "network alpha",
+            default=16,
+            ge=1)
     ) -> Path:
-
         # Unzip the dataset 
         train_data_dir = tempfile.mkdtemp()
         with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
@@ -163,7 +162,6 @@ class Predictor(BasePredictor):
         args.output_name = output_name
         args.logging_dir = "./logs"
         args.resolution = resolution
-        args.network_module = network_module
         args.max_train_epochs = max_train_epoches
         args.learning_rate = learning_rate
         args.unet_lr = unet_lr
@@ -171,12 +169,13 @@ class Predictor(BasePredictor):
         args.lr_scheduler = lr_scheduler
         args.lr_warmup_steps = lr_warmup_steps
         args.lr_scheduler_num_cycles = lr_scheduler_num_cycles
+        args.network_module = network_module
         args.network_dim = network_dim
         args.network_alpha = network_alpha
         args.output_name = output_name
         args.train_batch_size = batch_size
         args.save_every_n_epochs = save_every_n_epochs
-        args.mixed_precision = "fp16"
+        args.mixed_precision = "bf16" 
         args.save_precision = "fp16"
         args.seed = seed
         args.cache_latents = True
