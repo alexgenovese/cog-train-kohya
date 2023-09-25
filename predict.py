@@ -5,28 +5,36 @@ import os
 import time
 import subprocess
 from cog import BasePredictor, Input, Path
+import importlib  
 from sd_scripts.train_network import setup_parser, train
+from diffusers import DiffusionPipeline
+import torch
 
 BASE_MODEL_CACHE = "./base-model-cache"
 BASE_MODEL_ID = "stabilityai/stable-diffusion-xl-base-1.0"
 
+def download_weights(url, dest):
+    start = time.time()
+    print("downloading url: ", url)
+    print("downloading to: ", dest)
+    subprocess.check_call(["pget", "-x", url, dest])
+    print("downloading took: ", time.time() - start)
+    
 class Predictor(BasePredictor):
-
     def setup(self):
-        if not os.path.exists(BASE_MODEL_CACHE):
-            self.download_weights(BASE_MODEL_ID, BASE_MODEL_CACHE)
-
-    def download_weights(url, dest):
         start = time.time()
-        print("downloading url: ", url)
-        print("downloading to: ", dest)
-        subprocess.check_call(["pget", "-x", url, dest])
-        print("downloading took: ", time.time() - start)
-
+        print("Caching SDXL 1.0")
+        if not os.path.exists(BASE_MODEL_CACHE):
+            self.pipe = DiffusionPipeline.from_pretrained(
+                BASE_MODEL_ID,
+                torch_dtype=torch.float16,
+                use_safetensors=True
+            )
+            self.pipe.save_pretrained(BASE_MODEL_CACHE, safe_serialization=True)
+        print("Ended to download", time.time() - start)
     
     def predict(
         self,
-
         # Train data path 
         pretrained_model_name_or_path: str = Input(
             description="base model name or path",
@@ -80,19 +88,19 @@ class Predictor(BasePredictor):
             ge=0),
 
         # Learning rate
-        learning_rate: float = Input(description="Learning rate",
-                                default=0.0004,
-                                ge=0.0001,
-                                le=0.0009),
-        unet_lr: float = Input(description="UNet learning rate",
-                                default=0.0001,
-                                ge=0.0001,
-                                le=0.0009),
+        learning_rate: float = Input(description="Learning rate. It means 0.0001 or 0.0009",
+                                default=4,
+                                ge=1,
+                                le=9),
+        unet_lr: float = Input(description="UNet learning rate. It means 0.0001 or 0.0009",
+                                default=1,
+                                ge=1,
+                                le=9),
         text_encoder_lr: float = Input(
-            description="Text Encoder learning rate",
-            default=0.0001,
-            ge=0.0001,
-            le=0.0009),
+            description="Text Encoder learning rate. It means 0.0001 or 0.0009",
+            default=1,
+            ge=1,
+            le=9),
         lr_scheduler: str = Input(
             description=
             """"linear", "cosine", "cosine_with_restarts", "polynomial", "constant", "constant_with_warmup""",
@@ -152,7 +160,7 @@ class Predictor(BasePredictor):
         if not output_name:
             output_name = Path(
                 re.sub("[^-a-zA-Z0-9_]", "", train_data_zip.name)).name
-
+        
         parser = setup_parser()
         args = parser.parse_args()
         args.enable_bucket = True
@@ -163,7 +171,7 @@ class Predictor(BasePredictor):
         args.logging_dir = "./logs"
         args.resolution = resolution
         args.max_train_epochs = max_train_epoches
-        args.learning_rate = learning_rate
+        args.learning_rate = learning_rate / 10000
         args.unet_lr = unet_lr
         args.text_encoder_lr = text_encoder_lr
         args.lr_scheduler = lr_scheduler
