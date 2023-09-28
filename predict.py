@@ -23,14 +23,7 @@ def download_weights(url, dest):
 class Predictor(BasePredictor):
     def setup(self):
         start = time.time()
-        print("Caching SDXL 1.0")
-        if not os.path.exists(BASE_MODEL_CACHE):
-            self.pipe = DiffusionPipeline.from_pretrained(
-                BASE_MODEL_ID,
-                torch_dtype=torch.float16,
-                use_safetensors=True
-            )
-            self.pipe.save_pretrained(BASE_MODEL_CACHE, safe_serialization=True)
+        
         print("Ended to download", time.time() - start)
     
     def predict(
@@ -164,7 +157,7 @@ class Predictor(BasePredictor):
         parser = setup_parser()
         args = parser.parse_args()
         args.enable_bucket = True
-        args.pretrained_model_name_or_path = BASE_MODEL_CACHE
+        args.pretrained_model_name_or_path = BASE_MODEL_ID
         args.train_data_dir = train_data_dir
         args.output_dir = output_dir
         args.output_name = output_name
