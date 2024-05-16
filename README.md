@@ -12,6 +12,6 @@ cog predict -i pretrained_model_name_or_path=@images.zip
 
 ## Thanks
 
-[https://github.com/bmaltais/kohya_ss.git](Bmaltais/kohya_ss.git)
+[Bmaltais/kohya_ss.git](https://github.com/bmaltais/kohya_ss.git)
 
-[https://github.com/findix/replicate-sd-scripts] (findix/replicate-sd-scripts)
+[findix/replicate-sd-scripts](https://github.com/findix/replicate-sd-scripts)
